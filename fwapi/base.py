@@ -18,7 +18,7 @@ class FilmwebObject:
         """
         page = 1
         
-        final_results = []
+        #final_results = []
         while page <= max_page:
             url = "http://www.filmweb.pl/search/{}?q={}&page={}".format(cls.__name__.lower(),
                                                                         phrase, page)
@@ -38,8 +38,7 @@ class FilmwebObject:
                 elif cls.__name__ == "Person":
                     obj = cls(name=name, url=link)
                     
-                final_results.append(obj)
+                yield obj
             
             page += 1
-        
-        return final_results
+

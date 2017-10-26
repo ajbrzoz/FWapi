@@ -9,7 +9,7 @@ from fwapi.utils import make_request
 class TestFilm(unittest.TestCase):
     
     def setUp(self):
-        self.films = Film.search("john malkovich")
+        self.films = list(Film.search("john malkovich"))
         self.example = self.films[0]
         
         #several directors, screenwriters, genres, countries
@@ -33,7 +33,7 @@ class TestFilm(unittest.TestCase):
         """
         Walking through a series of pages
         """
-        results = Film.search("terminator", max_page=3)
+        results = list(Film.search("terminator", max_page=3))
         single_film = results[0]
         self.assertEqual(len(results), 30)
         self.assertIsInstance(single_film, Film)
@@ -41,7 +41,7 @@ class TestFilm(unittest.TestCase):
         self.assertEqual(single_film.url, "http://www.filmweb.pl/Terminator")
         
     def test_search_no_results(self):
-        results = Film.search("sdfghjfghj")
+        results = list(Film.search("sdfghjfghj"))
         self.assertListEqual(results, [])
         
     def test_get_by_id(self):
@@ -131,7 +131,7 @@ class TestFilm(unittest.TestCase):
 class TestPerson(unittest.TestCase):
     
     def setUp(self):
-        self.people = Person.search("john malkovich")
+        self.people = list(Person.search("john malkovich"))
         self.example = self.people[0]
         
         self.soup = make_request("http://www.filmweb.pl/person/John.Malkovich")
