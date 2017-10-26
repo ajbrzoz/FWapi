@@ -75,6 +75,7 @@ If the results are displayed on several pages, by default you get only those fro
 
 If you need to get more detailed information, first you need to populate the object:
 
+    >>> jc.populate()
     >>> jc.full_name
     'James Francis Cameron'
     >>> jc.birth_date
@@ -84,3 +85,4 @@ You can also retrieve the person's filmography which is an ordered dictionary wi
 
     >>> jc.filmography
     OrderedDict([('Avatar 5', ('', 2025)), ('Avatar 4', ('', 2024)), ('Avatar 3', ('', 2021)), ('Avatar 2', ('', 2020)), ('Avatar', ('', 2009)), ('Obcy z głębin', ('', 2005)), ('Głosy z głębin 3D', ('', 2003)), ('Ekspedycja: Bismarck', ('', 2002)), ('Titanic', ('Tancerz z przedziału najtańszej klasy', 1997)), ('T2 3-D: Battle Across Time', ('', 1996)), ('Prawdziwe kłamstwa', ('', 1994)), ('Terminator 2: Dzień sądu', ('', 1991)), ...
+
