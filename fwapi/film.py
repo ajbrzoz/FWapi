@@ -26,7 +26,9 @@ class Film(FilmwebObject):
         self.genre = None
         self.original_title = None
         self.screenwriter = None
-    
+        self.boxoffice = None
+        self.budget = None
+
     @classmethod
     def get_by_id(cls, id_):
         """
@@ -117,6 +119,22 @@ class Film(FilmwebObject):
         screenwriters = [sw.text for sw in found]
         return screenwriters
 
+    @staticmethod
+    def parse_boxoffice(soup):
+        """
+        Gets a boxoffice sum in dollars
+        """
+        found = soup.select('li.boxoffice')[0].parent.children
+        return sum(int(''.join([n for n in f.text if n.isdigit()])) for f in found)
+
+    @staticmethod
+    def parse_budget(soup):
+        """
+        Gets a budget sum in dollars
+        """
+        found = soup.find(text='budżet:').parent.next_sibling.text
+        return int(''.join([n for n in found if n.isdigit()]))
+
     def populate(self):
         """
         Populates more detailed fields that remain empty (None) after the object's instantiation
@@ -131,6 +149,8 @@ class Film(FilmwebObject):
         self.genre = self.parse_genre(soup)
         self.original_title = self.parse_original_title(soup)
         self.screenwriter = self.parse_screenwriter(soup)
+        self.boxoffice = self.parse_boxoffice(soup)
+        self.budget = self.parse_budget(soup)
 
     def __repr__(self):
         return "<{}: {}>".format(self.title, self.year)

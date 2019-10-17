@@ -109,6 +109,14 @@ class TestFilm(unittest.TestCase):
         screenwriters = Film.parse_screenwriter(self.soup)
         self.assertListEqual(screenwriters, ["Lilly Wachowski", "Lana Wachowski"])
 
+    def test_parse_boxoffice(self):
+        boxoffice = Film.parse_boxoffice(self.soup)
+        self.assertEqual(463517383, boxoffice)
+
+    def test_parse_budget(self):
+        budget = Film.parse_budget(self.soup)
+        self.assertEqual(63000000, budget)
+
     def test_populate_film(self):
         self.example.populate()
         expected_actors = {'Catherine Keener': 'Maxine Lund', 'Gregory Sporleder': 'Meżczyzna w barze',
