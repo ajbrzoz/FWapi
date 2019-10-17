@@ -45,7 +45,7 @@ class Film(FilmwebObject):
 
     @staticmethod
     def parse_actors(soup):
-        actors = soup.select("table.filmCast")[0].select("a.pImg49")
+        actors = soup.select("table.filmCast")[0].select("a.pImg46")
         characters = soup.select('span[itemprop="characterName"]')
         actor_names = (a["title"] for a in actors)
         char_names = (ch.text.strip() for ch in characters)
