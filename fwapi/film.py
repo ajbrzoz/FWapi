@@ -28,6 +28,7 @@ class Film(FilmwebObject):
         self.screenwriter = None
         self.boxoffice = None
         self.budget = None
+        self.topics_count = None
 
     @classmethod
     def get_by_id(cls, id_):
@@ -124,16 +125,34 @@ class Film(FilmwebObject):
         """
         Gets a boxoffice sum in dollars
         """
-        found = soup.select('li.boxoffice')[0].parent.children
-        return sum(int(''.join([n for n in f.text if n.isdigit()])) for f in found)
+        element = soup.find(text='boxoffice:')
+        if element:
+            boxoffice = element.parent.next_sibling
+            for val in boxoffice.children:
+                return int(''.join([n for n in val if n.isdigit()]))
+        return None
 
     @staticmethod
     def parse_budget(soup):
         """
         Gets a budget sum in dollars
         """
-        found = soup.find(text='budżet:').parent.next_sibling.text
-        return int(''.join([n for n in found if n.isdigit()]))
+        try:
+            found = soup.find(text='budżet:').parent.next_sibling.text
+            return int(''.join([n for n in found if n.isdigit()]))
+        except Exception:
+            return None
+
+    @staticmethod
+    def parse_topics(soup):
+        """
+        Gets a forum topics count
+        """
+        try:
+            found = soup.select('.forum-name span')[0].text
+            return int(''.join([n for n in found if n.isdigit()]))
+        except Exception:
+            return None
 
     def populate(self):
         """
@@ -151,6 +170,7 @@ class Film(FilmwebObject):
         self.screenwriter = self.parse_screenwriter(soup)
         self.boxoffice = self.parse_boxoffice(soup)
         self.budget = self.parse_budget(soup)
+        self.topics_count = self.parse_topics(soup)
 
     def __repr__(self):
         return "<{}: {}>".format(self.title, self.year)

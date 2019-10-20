@@ -117,6 +117,10 @@ class TestFilm(unittest.TestCase):
         budget = Film.parse_budget(self.soup)
         self.assertEqual(63000000, budget)
 
+    def test_parse_topics(self):
+        count = Film.parse_topics(self.soup)
+        self.assertGreaterEqual(count, 0)
+
     def test_populate_film(self):
         self.example.populate()
         expected_actors = {'Catherine Keener': 'Maxine Lund', 'Gregory Sporleder': 'Meżczyzna w barze',
@@ -134,6 +138,9 @@ class TestFilm(unittest.TestCase):
         self.assertListEqual(self.example.genre, ["Surrealistyczny", "Komedia"])
         self.assertEqual(self.example.original_title, "Being John Malkovich")
         self.assertListEqual(self.example.screenwriter, ["Charlie Kaufman"])
+        self.assertEqual(self.example.boxoffice, 36363596)
+        self.assertEqual(self.example.budget, 13000000)
+        self.assertGreaterEqual(self.example.topics_count, 0)
 
 
 class TestPerson(unittest.TestCase):
