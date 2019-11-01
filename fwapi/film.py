@@ -86,11 +86,14 @@ class Film(FilmwebObject):
     def parse_duration(soup):
         duration = soup.time.text
         pattern = re.compile(r'((\d{1,2}) godz.)? (\d{1,2}) min.')
-        matches = pattern.match(duration).groups()
-        hours, minutes = matches[1], matches[2]
-        if hours is None:
-            hours = 0
-        return datetime.time(int(hours), int(minutes))
+        match = pattern.match(duration)
+        if match:
+            matches = match.groups()
+            hours, minutes = matches[1], matches[2]
+            if hours is None:
+                hours = 0
+            return datetime.time(int(hours), int(minutes))
+        return None
 
     @staticmethod
     def parse_genre(soup):
@@ -129,7 +132,8 @@ class Film(FilmwebObject):
         if element:
             boxoffice = element.parent.next_sibling
             for val in boxoffice.children:
-                return int(''.join([n for n in val if n.isdigit()]))
+                if val:
+                    return int(''.join([n for n in val.string if n.isdigit()]))
         return None
 
     @staticmethod
