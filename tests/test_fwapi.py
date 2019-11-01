@@ -35,10 +35,10 @@ class TestFilm(unittest.TestCase):
         """
         results = list(Film.search("terminator", max_page=3))
         single_film = results[0]
-        self.assertEqual(len(results), 30)
+        self.assertEqual(len(results), 28)
         self.assertIsInstance(single_film, Film)
-        self.assertEqual(single_film.title, "Terminator")
-        self.assertEqual(single_film.url, "http://www.filmweb.pl/Terminator")
+        self.assertEqual(single_film.title, "Terminator: Mroczne przeznaczenie")
+        self.assertEqual(single_film.url, "http://www.filmweb.pl/film/Terminator%3A+Mroczne+przeznaczenie-2019-723372")
         
     def test_search_no_results(self):
         results = list(Film.search("sdfghjfghj"))
@@ -109,11 +109,23 @@ class TestFilm(unittest.TestCase):
         screenwriters = Film.parse_screenwriter(self.soup)
         self.assertListEqual(screenwriters, ["Lilly Wachowski", "Lana Wachowski"])
 
+    def test_parse_boxoffice(self):
+        boxoffice = Film.parse_boxoffice(self.soup)
+        self.assertEqual(463517383, boxoffice)
+
+    def test_parse_budget(self):
+        budget = Film.parse_budget(self.soup)
+        self.assertEqual(63000000, budget)
+
+    def test_parse_topics(self):
+        count = Film.parse_topics(self.soup)
+        self.assertGreaterEqual(count, 0)
+
     def test_populate_film(self):
         self.example.populate()
-        expected_actors = {'Catherine Keener': 'Maxine', 'Gregory Sporleder': 'Meżczyzna w barze',
+        expected_actors = {'Catherine Keener': 'Maxine Lund', 'Gregory Sporleder': 'Meżczyzna w barze',
                     'John Cusack': 'Craig Schwartz', 'Willie Garson': 'Facet w restauracji',
-                    'W. Earl Brown': 'Erroll', 'Orson Bean': 'Dr Lester',
+                    'W. Earl Brown': 'Pierwszy klient J.M. Inc.', 'Orson Bean': 'Dr Lester',
                     'Cameron Diaz': 'Lotte Schwartz', 'Mary Kay Place': 'Floris'}
         expected_description = "Pracownik odnajduje w swoim biurze drzwi prowadzące do " \
                                "świadomości znanego aktora - Johna Malkovicha."
@@ -126,6 +138,9 @@ class TestFilm(unittest.TestCase):
         self.assertListEqual(self.example.genre, ["Surrealistyczny", "Komedia"])
         self.assertEqual(self.example.original_title, "Being John Malkovich")
         self.assertListEqual(self.example.screenwriter, ["Charlie Kaufman"])
+        self.assertEqual(self.example.boxoffice, 36363596)
+        self.assertEqual(self.example.budget, 13000000)
+        self.assertGreaterEqual(self.example.topics_count, 0)
 
 
 class TestPerson(unittest.TestCase):
@@ -152,14 +167,14 @@ class TestPerson(unittest.TestCase):
 
     def test_parse_filmography(self):
         filmography = Person.parse_filmography(self.soup)
-        self.assertEqual(len(filmography.keys()), 113)
+        self.assertEqual(len(filmography.keys()), 120)
         self.assertIn("Być jak John Malkovich", filmography)
         
     def test_populate_person(self):
         self.example.populate()
         self.assertEqual(self.example.full_name, "John Gavin Malkovich")
         self.assertEqual(self.example.birth_date, datetime.date(1953, 12, 9))
-        self.assertEqual(len(self.example.filmography.keys()), 113)
+        self.assertEqual(len(self.example.filmography.keys()), 120)
         self.assertIn("Być jak John Malkovich", self.example.filmography)
 
 suite = unittest.TestSuite()

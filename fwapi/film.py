@@ -26,7 +26,10 @@ class Film(FilmwebObject):
         self.genre = None
         self.original_title = None
         self.screenwriter = None
-    
+        self.boxoffice = None
+        self.budget = None
+        self.topics_count = None
+
     @classmethod
     def get_by_id(cls, id_):
         """
@@ -45,7 +48,7 @@ class Film(FilmwebObject):
 
     @staticmethod
     def parse_actors(soup):
-        actors = soup.select("table.filmCast")[0].select("a.pImg49")
+        actors = soup.select("table.filmCast")[0].select("a.pImg46")
         characters = soup.select('span[itemprop="characterName"]')
         actor_names = (a["title"] for a in actors)
         char_names = (ch.text.strip() for ch in characters)
@@ -83,11 +86,14 @@ class Film(FilmwebObject):
     def parse_duration(soup):
         duration = soup.time.text
         pattern = re.compile(r'((\d{1,2}) godz.)? (\d{1,2}) min.')
-        matches = pattern.match(duration).groups()
-        hours, minutes = matches[1], matches[2]
-        if hours is None:
-            hours = 0
-        return datetime.time(int(hours), int(minutes))
+        match = pattern.match(duration)
+        if match:
+            matches = match.groups()
+            hours, minutes = matches[1], matches[2]
+            if hours is None:
+                hours = 0
+            return datetime.time(int(hours), int(minutes))
+        return None
 
     @staticmethod
     def parse_genre(soup):
@@ -117,6 +123,41 @@ class Film(FilmwebObject):
         screenwriters = [sw.text for sw in found]
         return screenwriters
 
+    @staticmethod
+    def parse_boxoffice(soup):
+        """
+        Gets a boxoffice sum in dollars
+        """
+        element = soup.find(text='boxoffice:')
+        if element:
+            boxoffice = element.parent.next_sibling
+            for val in boxoffice.children:
+                if val:
+                    return int(''.join([n for n in val.string if n.isdigit()]))
+        return None
+
+    @staticmethod
+    def parse_budget(soup):
+        """
+        Gets a budget sum in dollars
+        """
+        try:
+            found = soup.find(text='budżet:').parent.next_sibling.text
+            return int(''.join([n for n in found if n.isdigit()]))
+        except Exception:
+            return None
+
+    @staticmethod
+    def parse_topics(soup):
+        """
+        Gets a forum topics count
+        """
+        try:
+            found = soup.select('.forum-name span')[0].text
+            return int(''.join([n for n in found if n.isdigit()]))
+        except Exception:
+            return None
+
     def populate(self):
         """
         Populates more detailed fields that remain empty (None) after the object's instantiation
@@ -131,6 +172,9 @@ class Film(FilmwebObject):
         self.genre = self.parse_genre(soup)
         self.original_title = self.parse_original_title(soup)
         self.screenwriter = self.parse_screenwriter(soup)
+        self.boxoffice = self.parse_boxoffice(soup)
+        self.budget = self.parse_budget(soup)
+        self.topics_count = self.parse_topics(soup)
 
     def __repr__(self):
         return "<{}: {}>".format(self.title, self.year)
